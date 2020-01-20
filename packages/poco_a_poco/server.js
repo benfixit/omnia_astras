@@ -6,12 +6,12 @@ const schema = require('./src/schema');
 
 const app = express();
 
-const PORT = process.env.PORT || 7001;
+const PORT = process.env.PORT || 4000;
 
 mongoose.connect('mongodb://localhost/poco_a_poco', {
   useNewUrlParser: true,
   useUnifiedTopology: true
-}).then(() => console.log('We are connected!'))
+}).then(() => console.log('Connected to DB'))
   .catch(error => console.log(error));
 
 app.use(cors());

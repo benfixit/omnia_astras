@@ -4,6 +4,7 @@ const Schema = Mongoose.Schema;
 const KeyResultSchema = new Schema({
   description: String,
   objective: { type: Schema.Types.ObjectId, ref: 'Objective' },
+  done: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
