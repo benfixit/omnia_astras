@@ -1,0 +1,17 @@
+{
+  "name": "@omnia_atras/omnia_atras",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "start:poco": "cd packages/poco_a_poco && yarn start"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "lerna": "^3.14.1",
+    "nodemon": "^2.0.2"
+  }
+}

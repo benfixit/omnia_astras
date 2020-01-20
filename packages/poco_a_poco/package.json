@@ -1,0 +1,19 @@
+{
+  "name": "poco_a_poco",
+  "version": "1.0.0",
+  "description": "Backend for poco_a_poco application",
+  "author": "Chukwuemeka Inya <inyachukwuemeka1@gmail.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "server.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "start": "nodemon server.js"
+  }
+}
