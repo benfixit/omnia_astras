@@ -17,7 +17,7 @@ const ObjectiveType = new GraphQLObjectType({
   fields: {
     _id: { type: GraphQLString },
     title: { type: GraphQLString },
-    description: { type, GraphQLString },
+    description: { type: GraphQLString },
     status: { type: StatusType },
     createdAt: { type: GraphQLString }
   }
