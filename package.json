@@ -5,6 +5,7 @@
     "packages/*"
   ],
   "scripts": {
+    "start:expense": "cd packages/expense_tracker && yarn start",
     "start:poco": "cd packages/poco_a_poco && yarn start"
   },
   "dependencies": {
