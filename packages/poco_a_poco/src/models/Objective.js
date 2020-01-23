@@ -4,10 +4,10 @@ const Schema = Mongoose.Schema;
 const ObjectiveSchema = new Schema({
   title: String,
   description: String,
-  status: { type: Schema.Types.ObjectId, ref: 'Status' },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  status: { type: Schema.Types.ObjectId, ref: 'Status' }
 });
+
+ObjectiveSchema.set('timestamps', true);
 
 const Objective = Mongoose.model('Objective', ObjectiveSchema);
 
