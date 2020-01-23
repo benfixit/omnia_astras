@@ -1,0 +1,12 @@
+{
+  "name": "@omnia_atras/expense_tracker",
+  "version": "1.0.0",
+  "description": "Backend for expense_tracker application",
+  "author": "Chukwuemeka Inya <inyachukwuemeka1@gmail.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  }
+}
