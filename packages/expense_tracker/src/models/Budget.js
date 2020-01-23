@@ -8,10 +8,10 @@ const BudgetSchema = new Schema({
   category: { type: Schema.Types.ObjectId, ref: 'Category' },
   year: { type: Number, default: date.getFullYear() },
   month: { type: Number, default: date.getMonth() },
-  day: { type: Number, default: date.getDate() },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  day: { type: Number, default: date.getDate() }
 });
+
+BudgetSchema.set('timestamps', true);
 
 const Budget = Mongoose.model('Budget', BudgetSchema);
 

@@ -1,10 +1,11 @@
 const Mongoose = require('mongoose');
+const Schema = Mongoose.Schema;
 
-const CategorySchema = Mongoose.Schema({
-  title: String,
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+const CategorySchema = new Schema({
+  title: String
 });
+
+CategorySchema.set('timestamps', true);
 
 const Category = Mongoose.model('Category', CategorySchema);
 
