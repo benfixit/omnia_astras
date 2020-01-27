@@ -2,6 +2,7 @@ const { GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString, GraphQLObjectType,
 const Expense = require('../models/Expense');
 const Category = require('../models/Category');
 const Income = require('../models/Income');
+const Saving = require('../models/Saving');
 
 const CategoryType = new GraphQLObjectType({
   name: 'Category',
@@ -40,11 +41,24 @@ const IncomeType = new GraphQLObjectType({
   }
 });
 
+const SavingType = new GraphQLObjectType({
+  name: 'Saving',
+  fields: {
+    _id: { type: GraphQLString },
+    description: { type: GraphQLString },
+    amount: { type: GraphQLInt },
+    year: { type: GraphQLInt },
+    month: { type: GraphQLInt },
+    day: { type: GraphQLInt },
+    createdAt: { type: GraphQLString }
+  }
+});
+
 const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'Query',
     fields: {
-      budget: {
+      expense: {
         type: ExpenseType,
         args: {
           _id: { type: GraphQLNonNull(GraphQLID) }
@@ -53,7 +67,7 @@ const schema = new GraphQLSchema({
           return Expense.findOne(args).populate('category').exec()
         }
       },
-      budgets: {
+      expenses: {
         type: GraphQLList(ExpenseType),
         args: {
           year: { type: GraphQLInt },
@@ -82,6 +96,26 @@ const schema = new GraphQLSchema({
         },
         resolve: (root, args) => {
           return Income.find(args).exec()
+        }
+      },
+      saving: {
+        type: SavingType,
+        args: {
+          _id: { type: GraphQLNonNull(GraphQLID) }
+        },
+        resolve: (root, args) => {
+          return Saving.findOne(args).exec()
+        }
+      },
+      savings: {
+        type: GraphQLList(SavingType),
+        args: {
+          year: { type: GraphQLInt },
+          month: { type: GraphQLInt },
+          day: { type: GraphQLInt }
+        },
+        resolve: (root, args) => {
+          return Saving.find(args).exec()
         }
       },
       categories: {
@@ -122,6 +156,23 @@ const schema = new GraphQLSchema({
           return income.save(function (err) {
             if (err) return { code: 400, message: 'Income could not be saved.' };
             return { code: 200, message: 'Income saved.' };
+          });
+        }
+      },
+      createSaving: {
+        type: SavingType,
+        args: {
+          description: { type: GraphQLString },
+          amount: { type: GraphQLInt },
+          year: { type: GraphQLInt },
+          month: { type: GraphQLInt },
+          day: { type: GraphQLInt }
+        },
+        resolve: (root, args) => {
+          const saving = new Saving(args);
+          return saving.save(function (err) {
+            if (err) return { code: 400, message: 'Saving could not be saved.' };
+            return { code: 200, message: 'Saving saved.' };
           });
         }
       },
@@ -172,6 +223,24 @@ const schema = new GraphQLSchema({
           return Income.findOneAndUpdate({_id: args._id}, rest, { new: true, useFindAndModify: false }, function (error, income) {
             if (error) return { code: 400, message: 'Income could not be updated.' };
             return income
+          });
+        }
+      },
+      editSaving: {
+        type: SavingType,
+        args: {
+          _id: { type: GraphQLNonNull(GraphQLID) },
+          description: { type: GraphQLString },
+          amount: { type: GraphQLInt },
+          year: { type: GraphQLInt },
+          month: { type: GraphQLInt },
+          day: { type: GraphQLInt }
+        },
+        resolve: (root, args) => {
+          const { _id, ...rest } = args;
+          return Saving.findOneAndUpdate({_id: args._id}, rest, { new: true, useFindAndModify: false }, function (error, saving) {
+            if (error) return { code: 400, message: 'Saving could not be updated.' };
+            return saving
           });
         }
       },
