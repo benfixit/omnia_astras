@@ -3,17 +3,16 @@ const Schema = Mongoose.Schema;
 
 const date = new Date();
 
-const TransactionShema = new Schema({
+const IncomeShema = new Schema({
   description: String,
   amount: Number,
   year: { type: Number, default: date.getFullYear() },
   month: { type: Number, default: date.getMonth() },
   day: { type: Number, default: date.getDate() },
-  category: { type: Schema.Types.ObjectId, ref: 'Category' }
 });
 
-TransactionShema.set('timestamps', true);
+IncomeShema.set('timestamps', true);
 
-const Transaction = Mongoose.model('Transaction', TransactionShema);
+const Income = Mongoose.model('Income', IncomeShema);
 
-module.exports = Transaction;
+module.exports = Income;
