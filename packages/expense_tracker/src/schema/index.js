@@ -64,6 +64,15 @@ const schema = new GraphQLSchema({
           return Budget.find(args).populate('category').exec()
         }
       },
+      income: {
+        type: IncomeType,
+        args: {
+          _id: { type: GraphQLNonNull(GraphQLID) }
+        },
+        resolve: (root, args) => {
+          return Income.findOne(args).exec()
+        }
+      },
       incomes: {
         type: GraphQLList(IncomeType),
         args: {
@@ -183,7 +192,7 @@ const schema = new GraphQLSchema({
           return Budget.findOneAndUpdate({_id: args._id}, rest, { new: true }, function (error, budget) {
             if (error) return { code: 400, message: 'Budget could not be updated.' };
             return budget
-          });
+          }).populate('category').exec();
         }
       }
     }
