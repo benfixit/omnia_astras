@@ -3,7 +3,7 @@ const Schema = Mongoose.Schema;
 
 const date = new Date();
 
-const BudgetSchema = new Schema({
+const ExpenseSchema = new Schema({
   description: String,
   budget: Number,
   actual: Number,
@@ -13,8 +13,8 @@ const BudgetSchema = new Schema({
   day: { type: Number, default: date.getDate() }
 });
 
-BudgetSchema.set('timestamps', true);
+ExpenseSchema.set('timestamps', true);
 
-const Budget = Mongoose.model('Budget', BudgetSchema);
+const Expense = Mongoose.model('Expense', ExpenseSchema);
 
-module.exports = Budget;
+module.exports = Expense;

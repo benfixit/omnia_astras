@@ -1,5 +1,5 @@
 const { GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString, GraphQLObjectType, GraphQLList, GraphQLSchema } = require('graphql');
-const Budget = require('../models/Budget');
+const Expense = require('../models/Expense');
 const Category = require('../models/Category');
 const Income = require('../models/Income');
 
@@ -12,8 +12,8 @@ const CategoryType = new GraphQLObjectType({
   }
 });
 
-const BudgetType = new GraphQLObjectType({
-  name: 'Budget',
+const ExpenseType = new GraphQLObjectType({
+  name: 'Expense',
   fields: {
     _id: { type: GraphQLString },
     description: { type: GraphQLString },
@@ -45,23 +45,23 @@ const schema = new GraphQLSchema({
     name: 'Query',
     fields: {
       budget: {
-        type: BudgetType,
+        type: ExpenseType,
         args: {
           _id: { type: GraphQLNonNull(GraphQLID) }
         },
         resolve: (root, args) => {
-          return Budget.findOne(args).populate('category').exec()
+          return Expense.findOne(args).populate('category').exec()
         }
       },
       budgets: {
-        type: GraphQLList(BudgetType),
+        type: GraphQLList(ExpenseType),
         args: {
           year: { type: GraphQLInt },
           month: { type: GraphQLInt },
           day: { type: GraphQLInt }
         },
         resolve: (root, args) => {
-          return Budget.find(args).populate('category').exec()
+          return Expense.find(args).populate('category').exec()
         }
       },
       income: {
@@ -125,8 +125,8 @@ const schema = new GraphQLSchema({
           });
         }
       },
-      createBudget: {
-        type: BudgetType,
+      createExpense: {
+        type: ExpenseType,
         args: {
           description: { type: GraphQLString },
           budget: { type: GraphQLInt },
@@ -137,10 +137,10 @@ const schema = new GraphQLSchema({
           day: { type: GraphQLInt }
         },
         resolve: (root, args) => {
-          const budget = new Budget(args);
+          const budget = new Expense(args);
           return budget.save(function (err) {
-            if (err) return { code: 400, message: 'Budget could not be saved.' };
-            return { code: 200, message: 'Budget saved.' };
+            if (err) return { code: 400, message: 'Expense could not be saved.' };
+            return { code: 200, message: 'Expense saved.' };
           });
         }
       },
@@ -175,8 +175,8 @@ const schema = new GraphQLSchema({
           });
         }
       },
-      editBudget: {
-        type: BudgetType,
+      editExpense: {
+        type: ExpenseType,
         args: {
           _id: { type: GraphQLNonNull(GraphQLID) },
           description: { type: GraphQLString },
@@ -189,8 +189,8 @@ const schema = new GraphQLSchema({
         },
         resolve: (root, args) => {
           const { _id, ...rest } = args;
-          return Budget.findOneAndUpdate({_id: args._id}, rest, { new: true }, function (error, budget) {
-            if (error) return { code: 400, message: 'Budget could not be updated.' };
+          return Expense.findOneAndUpdate({_id: args._id}, rest, { new: true }, function (error, budget) {
+            if (error) return { code: 400, message: 'Expense could not be updated.' };
             return budget
           }).populate('category').exec();
         }
