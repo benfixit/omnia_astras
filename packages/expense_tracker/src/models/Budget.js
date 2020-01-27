@@ -4,7 +4,9 @@ const Schema = Mongoose.Schema;
 const date = new Date();
 
 const BudgetSchema = new Schema({
-  amount: Number,
+  description: String,
+  budget: Number,
+  actual: Number,
   category: { type: Schema.Types.ObjectId, ref: 'Category' },
   year: { type: Number, default: date.getFullYear() },
   month: { type: Number, default: date.getMonth() },
