@@ -18,8 +18,8 @@ const ExpenseType = new GraphQLObjectType({
   fields: {
     _id: { type: GraphQLString },
     description: { type: GraphQLString },
-    budget: { type: GraphQLString },
-    actual: { type: GraphQLString },
+    budget: { type: GraphQLInt },
+    actual: { type: GraphQLInt },
     category: { type: CategoryType },
     year: { type: GraphQLInt },
     month: { type: GraphQLInt },
@@ -47,6 +47,7 @@ const SavingType = new GraphQLObjectType({
     _id: { type: GraphQLString },
     description: { type: GraphQLString },
     amount: { type: GraphQLInt },
+    actual: { type: GraphQLInt },
     year: { type: GraphQLInt },
     month: { type: GraphQLInt },
     day: { type: GraphQLInt },
@@ -164,6 +165,7 @@ const schema = new GraphQLSchema({
         args: {
           description: { type: GraphQLString },
           amount: { type: GraphQLInt },
+          actual: { type: GraphQLInt },
           year: { type: GraphQLInt },
           month: { type: GraphQLInt },
           day: { type: GraphQLInt }
@@ -232,6 +234,7 @@ const schema = new GraphQLSchema({
           _id: { type: GraphQLNonNull(GraphQLID) },
           description: { type: GraphQLString },
           amount: { type: GraphQLInt },
+          actual: { type: GraphQLInt },
           year: { type: GraphQLInt },
           month: { type: GraphQLInt },
           day: { type: GraphQLInt }

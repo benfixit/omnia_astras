@@ -6,6 +6,7 @@ const date = new Date();
 const SavingSchema = new Schema({
   description: String,
   amount: Number,
+  actual: Number,
   year: { type: Number, default: date.getFullYear() },
   month: { type: Number, default: date.getMonth() },
   day: { type: Number, default: date.getDate() },
