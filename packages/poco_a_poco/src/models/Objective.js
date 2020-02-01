@@ -4,7 +4,8 @@ const Schema = Mongoose.Schema;
 const ObjectiveSchema = new Schema({
   title: String,
   description: String,
-  status: { type: Schema.Types.ObjectId, ref: 'Status' }
+  status: { type: Schema.Types.ObjectId, ref: 'Status' },
+  dueDate: { type: Date, default: Date.now }
 });
 
 ObjectiveSchema.set('timestamps', true);
