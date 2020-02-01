@@ -266,6 +266,17 @@ const schema = new GraphQLSchema({
             return budget
           }).populate('category').exec();
         }
+      },
+      deleteExpense: {
+        type: ExpenseType,
+        args: {
+          _id: { type: GraphQLNonNull(GraphQLID) }
+        },
+        resolve: (root, args) => {
+          return Expense.deleteOne({_id: args._id}, function (err) {
+            if (err) return { code: 400, message: 'Expense could not be deleted.' };
+          });
+        }
       }
     }
   })
