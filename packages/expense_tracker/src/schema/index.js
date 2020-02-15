@@ -3,6 +3,7 @@ const Expense = require('../models/Expense');
 const Category = require('../models/Category');
 const Income = require('../models/Income');
 const Saving = require('../models/Saving');
+const Note = require('../models/Note');
 
 const CategoryType = new GraphQLObjectType({
   name: 'Category',
@@ -51,6 +52,15 @@ const SavingType = new GraphQLObjectType({
     year: { type: GraphQLInt },
     month: { type: GraphQLInt },
     day: { type: GraphQLInt },
+    createdAt: { type: GraphQLString }
+  }
+});
+
+const NoteType = new GraphQLObjectType({
+  name: 'Note',
+  fields: {
+    _id: { type: GraphQLString },
+    description: { type: GraphQLString },
     createdAt: { type: GraphQLString }
   }
 });
@@ -124,6 +134,21 @@ const schema = new GraphQLSchema({
         resolve: (root, args) => {
           return Category.find().exec()
         }
+      },
+      note: {
+        type: NoteType,
+        args: {
+          _id: { type: GraphQLNonNull(GraphQLID) }
+        },
+        resolve: (root, args) => {
+          return Note.findOne(args).exec()
+        }
+      },
+      notes: {
+        type: GraphQLList(NoteType),
+        resolve: (root, args) => {
+          return Note.find().exec()
+        }
       }
     }
   }),
@@ -190,10 +215,23 @@ const schema = new GraphQLSchema({
           day: { type: GraphQLInt }
         },
         resolve: (root, args) => {
-          const budget = new Expense(args);
-          return budget.save(function (err) {
+          const expense = new Expense(args);
+          return expense.save(function (err) {
             if (err) return { code: 400, message: 'Expense could not be saved.' };
             return { code: 200, message: 'Expense saved.' };
+          });
+        }
+      },
+      createNote: {
+        type: NoteType,
+        args: {
+          description: { type: GraphQLString }
+        },
+        resolve: (root, args) => {
+          const note = new Note(args);
+          return note.save(function (err) {
+            if (err) return { code: 400, message: 'Note could not be saved.' };
+            return { code: 200, message: 'Note saved.' };
           });
         }
       },
@@ -261,10 +299,24 @@ const schema = new GraphQLSchema({
         },
         resolve: (root, args) => {
           const { _id, ...rest } = args;
-          return Expense.findOneAndUpdate({_id: args._id}, rest, { new: true }, function (error, budget) {
+          return Expense.findOneAndUpdate({_id: args._id}, rest, { new: true }, function (error, expense) {
             if (error) return { code: 400, message: 'Expense could not be updated.' };
-            return budget
+            return expense
           }).populate('category').exec();
+        }
+      },
+      editNote: {
+        type: NoteType,
+        args: {
+          _id: { type: GraphQLNonNull(GraphQLID) },
+          description: { type: GraphQLString }
+        },
+        resolve: (root, args) => {
+          const { _id, ...rest } = args;
+          return Note.findOneAndUpdate({_id: args._id}, rest, { new: true }, function (error, note) {
+            if (error) return { code: 400, message: 'Note could not be updated.' };
+            return note
+          }).exec();
         }
       },
       deleteExpense: {
