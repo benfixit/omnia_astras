@@ -60,7 +60,6 @@ const SavingType = new GraphQLObjectType({
     description: { type: GraphQLString },
     amount: { type: GraphQLInt },
     actual: { type: GraphQLInt },
-    type: { type: ChargeTypeModelType },
     year: { type: GraphQLInt },
     month: { type: GraphQLInt },
     day: { type: GraphQLInt },
@@ -83,6 +82,10 @@ const ChargeType = new GraphQLObjectType({
     _id: { type: GraphQLString },
     description: { type: GraphQLString },
     amount: { type: GraphQLInt },
+    type: { type: ChargeTypeModelType },
+    year: { type: GraphQLInt },
+    month: { type: GraphQLInt },
+    day: { type: GraphQLInt },
     createdAt: { type: GraphQLString }
   }
 });
@@ -189,6 +192,11 @@ const schema = new GraphQLSchema({
       },
       charges: {
         type: GraphQLList(ChargeType),
+        args: {
+          year: { type: GraphQLInt },
+          month: { type: GraphQLInt },
+          day: { type: GraphQLInt }
+        },
         resolve: (root, args) => {
           return Charge.find().exec()
         }
@@ -247,7 +255,6 @@ const schema = new GraphQLSchema({
           description: { type: GraphQLString },
           amount: { type: GraphQLInt },
           actual: { type: GraphQLInt },
-          type: { type: GraphQLNonNull(GraphQLID) },
           year: { type: GraphQLInt },
           month: { type: GraphQLInt },
           day: { type: GraphQLInt }
@@ -298,6 +305,9 @@ const schema = new GraphQLSchema({
           description: { type: GraphQLString },
           amount: { type: GraphQLInt },
           type: { type: GraphQLNonNull(GraphQLID) },
+          year: { type: GraphQLInt },
+          month: { type: GraphQLInt },
+          day: { type: GraphQLInt }
         },
         resolve: (root, args) => {
           const charge = new Charge(args);
@@ -347,8 +357,7 @@ const schema = new GraphQLSchema({
           actual: { type: GraphQLInt },
           year: { type: GraphQLInt },
           month: { type: GraphQLInt },
-          day: { type: GraphQLInt },
-          type: { type: GraphQLID }
+          day: { type: GraphQLInt }
         },
         resolve: (root, args) => {
           const { _id, ...rest } = args;
@@ -385,7 +394,10 @@ const schema = new GraphQLSchema({
           _id: { type: GraphQLNonNull(GraphQLID) },
           description: { type: GraphQLString },
           amount: { type: GraphQLInt },
-          type: { type: GraphQLID }
+          type: { type: GraphQLID },
+          year: { type: GraphQLInt },
+          month: { type: GraphQLInt },
+          day: { type: GraphQLInt }
         },
         resolve: (root, args) => {
           const { _id, ...rest } = args;
