@@ -4,9 +4,20 @@ const Category = require('../models/Category');
 const Income = require('../models/Income');
 const Saving = require('../models/Saving');
 const Note = require('../models/Note');
+const Charge = require('../models/Charge');
+const ChargeTypeModel = require('../models/ChargeType');
 
 const CategoryType = new GraphQLObjectType({
   name: 'Category',
+  fields: {
+    _id: { type: GraphQLString },
+    title: { type: GraphQLString },
+    createdAt: { type: GraphQLString }
+  }
+});
+
+const ChargeTypeModelType = new GraphQLObjectType({
+  name: 'ChargeType',
   fields: {
     _id: { type: GraphQLString },
     title: { type: GraphQLString },
@@ -49,6 +60,7 @@ const SavingType = new GraphQLObjectType({
     description: { type: GraphQLString },
     amount: { type: GraphQLInt },
     actual: { type: GraphQLInt },
+    type: { type: ChargeTypeModelType },
     year: { type: GraphQLInt },
     month: { type: GraphQLInt },
     day: { type: GraphQLInt },
@@ -61,6 +73,16 @@ const NoteType = new GraphQLObjectType({
   fields: {
     _id: { type: GraphQLString },
     description: { type: GraphQLString },
+    createdAt: { type: GraphQLString }
+  }
+});
+
+const ChargeType = new GraphQLObjectType({
+  name: 'Charge',
+  fields: {
+    _id: { type: GraphQLString },
+    description: { type: GraphQLString },
+    amount: { type: GraphQLInt },
     createdAt: { type: GraphQLString }
   }
 });
@@ -115,7 +137,7 @@ const schema = new GraphQLSchema({
           _id: { type: GraphQLNonNull(GraphQLID) }
         },
         resolve: (root, args) => {
-          return Saving.findOne(args).exec()
+          return Saving.findOne(args).populate('type').exec()
         }
       },
       savings: {
@@ -126,13 +148,19 @@ const schema = new GraphQLSchema({
           day: { type: GraphQLInt }
         },
         resolve: (root, args) => {
-          return Saving.find(args).exec()
+          return Saving.find(args).populate('type').exec()
         }
       },
       categories: {
         type: GraphQLList(CategoryType),
         resolve: (root, args) => {
           return Category.find().exec()
+        }
+      },
+      chargeTypes: {
+        type: GraphQLList(ChargeTypeModelType),
+        resolve: (root, args) => {
+          return ChargeTypeModel.find().exec()
         }
       },
       note: {
@@ -148,6 +176,21 @@ const schema = new GraphQLSchema({
         type: GraphQLList(NoteType),
         resolve: (root, args) => {
           return Note.find().exec()
+        }
+      },
+      charge: {
+        type: ChargeType,
+        args: {
+          _id: { type: GraphQLNonNull(GraphQLID) }
+        },
+        resolve: (root, args) => {
+          return Charge.findOne(args).exec()
+        }
+      },
+      charges: {
+        type: GraphQLList(ChargeType),
+        resolve: (root, args) => {
+          return Charge.find().exec()
         }
       }
     }
@@ -165,6 +208,19 @@ const schema = new GraphQLSchema({
           return category.save(function (err) {
             if (err) return { code: 400, message: 'Category could not be saved.' };
             return { code: 200, message: 'Category saved.' };
+          });
+        }
+      },
+      createChargeType: {
+        type: ChargeTypeModelType,
+        args: {
+          title: { type: GraphQLString }
+        },
+        resolve: (root, args) => {
+          const chargeType = new ChargeTypeModel(args);
+          return chargeType.save(function (err) {
+            if (err) return { code: 400, message: 'Charge Type could not be saved.' };
+            return { code: 200, message: 'Charge Type saved.' };
           });
         }
       },
@@ -191,6 +247,7 @@ const schema = new GraphQLSchema({
           description: { type: GraphQLString },
           amount: { type: GraphQLInt },
           actual: { type: GraphQLInt },
+          type: { type: GraphQLNonNull(GraphQLID) },
           year: { type: GraphQLInt },
           month: { type: GraphQLInt },
           day: { type: GraphQLInt }
@@ -235,6 +292,21 @@ const schema = new GraphQLSchema({
           });
         }
       },
+      createCharge: {
+        type: ChargeType,
+        args: {
+          description: { type: GraphQLString },
+          amount: { type: GraphQLInt },
+          type: { type: GraphQLNonNull(GraphQLID) },
+        },
+        resolve: (root, args) => {
+          const charge = new Charge(args);
+          return charge.save(function (err) {
+            if (err) return { code: 400, message: 'Charge could not be saved.' };
+            return { code: 200, message: 'Charge saved.' };
+          });
+        }
+      },
       editCategory: {
         type: CategoryType,
         args: {
@@ -275,10 +347,12 @@ const schema = new GraphQLSchema({
           actual: { type: GraphQLInt },
           year: { type: GraphQLInt },
           month: { type: GraphQLInt },
-          day: { type: GraphQLInt }
+          day: { type: GraphQLInt },
+          type: { type: GraphQLID }
         },
         resolve: (root, args) => {
           const { _id, ...rest } = args;
+          console.log(args)
           return Saving.findOneAndUpdate({_id: args._id}, rest, { new: true, useFindAndModify: false }, function (error, saving) {
             if (error) return { code: 400, message: 'Saving could not be updated.' };
             return saving
@@ -303,6 +377,22 @@ const schema = new GraphQLSchema({
             if (error) return { code: 400, message: 'Expense could not be updated.' };
             return expense
           }).populate('category').exec();
+        }
+      },
+      editCharge: {
+        type: ChargeType,
+        args: {
+          _id: { type: GraphQLNonNull(GraphQLID) },
+          description: { type: GraphQLString },
+          amount: { type: GraphQLInt },
+          type: { type: GraphQLID }
+        },
+        resolve: (root, args) => {
+          const { _id, ...rest } = args;
+          return Charge.findOneAndUpdate({_id: args._id}, rest, { new: true }, function (error, note) {
+            if (error) return { code: 400, message: 'Charge could not be updated.' };
+            return charge
+          }).exec();
         }
       },
       editNote: {

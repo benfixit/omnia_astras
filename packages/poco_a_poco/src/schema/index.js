@@ -1,4 +1,4 @@
-const { GraphQLBoolean, GraphQLList, GraphQLSchema, GraphQLString, GraphQLObjectType } = require('graphql');
+const { GraphQLID, GraphQLNonNull, GraphQLBoolean, GraphQLList, GraphQLSchema, GraphQLString, GraphQLObjectType } = require('graphql');
 const Comment = require('../models/Comment');
 const Objective = require('../models/Objective');
 const Status = require('../models/Status');
@@ -78,20 +78,22 @@ const schema = new GraphQLSchema({
   }),
   mutation: new GraphQLObjectType({
     name: 'Mutation',
-    createObjective: {
-      type: ObjectiveType,
-      args: {
-        title: { type: GraphQLString },
-        description: { type: GraphQLString },
-        status: { type: StatusType },
-        dueDate: { type: GraphQLString }
-      },
-      resolve: (root, args) => {
-        const objective = Objective(args);
-        return objective.save(function (err) {
-          if (err) return { code: 400, message: 'Objective could not be saved.' };
-          return { code: 200, message: 'Objective saved.' };
-        });
+    fields: {
+      createObjective: {
+        type: ObjectiveType,
+        args: {
+          title: { type: GraphQLString },
+          description: { type: GraphQLString },
+          status: { type: GraphQLNonNull(GraphQLID) },
+          dueDate: { type: GraphQLString }
+        },
+        resolve: (root, args) => {
+          const objective = Objective(args);
+          return objective.save(function (err) {
+            if (err) return { code: 400, message: 'Objective could not be saved.' };
+            return { code: 200, message: 'Objective saved.' };
+          });
+        }
       }
     }
   })
