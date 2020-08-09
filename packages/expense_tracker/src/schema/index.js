@@ -3,6 +3,7 @@ const Expense = require('../models/Expense');
 const Category = require('../models/Category');
 const Income = require('../models/Income');
 const Saving = require('../models/Saving');
+const Investment = require('../models/Investment');
 const Note = require('../models/Note');
 const Charge = require('../models/Charge');
 const ChargeTypeModel = require('../models/ChargeType');
@@ -60,6 +61,19 @@ const SavingType = new GraphQLObjectType({
     description: { type: GraphQLString },
     amount: { type: GraphQLInt },
     actual: { type: GraphQLInt },
+    year: { type: GraphQLInt },
+    month: { type: GraphQLInt },
+    day: { type: GraphQLInt },
+    createdAt: { type: GraphQLString }
+  }
+});
+
+const InvestmentType = new GraphQLObjectType({
+  name: 'Investment',
+  fields: {
+    _id: { type: GraphQLString },
+    description: { type: GraphQLString },
+    amount: { type: GraphQLInt },
     year: { type: GraphQLInt },
     month: { type: GraphQLInt },
     day: { type: GraphQLInt },
@@ -140,7 +154,7 @@ const schema = new GraphQLSchema({
           _id: { type: GraphQLNonNull(GraphQLID) }
         },
         resolve: (root, args) => {
-          return Saving.findOne(args).populate('type').exec()
+          return Saving.findOne(args).exec()
         }
       },
       savings: {
@@ -151,7 +165,27 @@ const schema = new GraphQLSchema({
           day: { type: GraphQLInt }
         },
         resolve: (root, args) => {
-          return Saving.find(args).populate('type').exec()
+          return Saving.find(args).exec()
+        }
+      },
+      investment: {
+        type: InvestmentType,
+        args: {
+          _id: { type: GraphQLNonNull(GraphQLID) }
+        },
+        resolve: (root, args) => {
+          return Investment.findOne(args).exec()
+        }
+      },
+      investments: {
+        type: GraphQLList(InvestmentType),
+        args: {
+          year: { type: GraphQLInt },
+          month: { type: GraphQLInt },
+          day: { type: GraphQLInt }
+        },
+        resolve: (root, args) => {
+          return Investment.find(args).exec()
         }
       },
       categories: {
@@ -187,7 +221,7 @@ const schema = new GraphQLSchema({
           _id: { type: GraphQLNonNull(GraphQLID) }
         },
         resolve: (root, args) => {
-          return Charge.findOne(args).exec()
+          return Charge.findOne(args).populate('type').exec()
         }
       },
       charges: {
@@ -198,7 +232,7 @@ const schema = new GraphQLSchema({
           day: { type: GraphQLInt }
         },
         resolve: (root, args) => {
-          return Charge.find().exec()
+          return Charge.find(args).populate('type').exec()
         }
       }
     }
@@ -264,6 +298,23 @@ const schema = new GraphQLSchema({
           return saving.save(function (err) {
             if (err) return { code: 400, message: 'Saving could not be saved.' };
             return { code: 200, message: 'Saving saved.' };
+          });
+        }
+      },
+      createInvestment: {
+        type: InvestmentType,
+        args: {
+          description: { type: GraphQLString },
+          amount: { type: GraphQLInt },
+          year: { type: GraphQLInt },
+          month: { type: GraphQLInt },
+          day: { type: GraphQLInt }
+        },
+        resolve: (root, args) => {
+          const investment = new Investment(args);
+          return investment.save(function (err) {
+            if (err) return { code: 400, message: 'Investment could not be saved.' };
+            return { code: 200, message: 'Investment saved.' };
           });
         }
       },
@@ -361,10 +412,27 @@ const schema = new GraphQLSchema({
         },
         resolve: (root, args) => {
           const { _id, ...rest } = args;
-          console.log(args)
           return Saving.findOneAndUpdate({_id: args._id}, rest, { new: true, useFindAndModify: false }, function (error, saving) {
             if (error) return { code: 400, message: 'Saving could not be updated.' };
             return saving
+          });
+        }
+      },
+      editInvestment: {
+        type: InvestmentType,
+        args: {
+          _id: { type: GraphQLNonNull(GraphQLID) },
+          description: { type: GraphQLString },
+          amount: { type: GraphQLInt },
+          year: { type: GraphQLInt },
+          month: { type: GraphQLInt },
+          day: { type: GraphQLInt }
+        },
+        resolve: (root, args) => {
+          const { _id, ...rest } = args;
+          return Investment.findOneAndUpdate({_id: args._id}, rest, { new: true, useFindAndModify: false }, function (error, investment) {
+            if (error) return { code: 400, message: 'Investment could not be updated.' };
+            return investment
           });
         }
       },
@@ -401,7 +469,7 @@ const schema = new GraphQLSchema({
         },
         resolve: (root, args) => {
           const { _id, ...rest } = args;
-          return Charge.findOneAndUpdate({_id: args._id}, rest, { new: true }, function (error, note) {
+          return Charge.findOneAndUpdate({_id: args._id}, rest, { new: true }, function (error, charge) {
             if (error) return { code: 400, message: 'Charge could not be updated.' };
             return charge
           }).exec();
